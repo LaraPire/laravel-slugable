@@ -1,0 +1,46 @@
+{
+    "name": "rayiumir/laravel-has-slug",
+    "description": "Minimal auto slug trait for Laravel Eloquent models.",
+    "keywords": [
+        "laravel-slug",
+        "laravel slug",
+        "easy slug",
+        "laravel",
+        "laravel slug package"
+    ],
+    "license": "MIT",
+    "type": "package",
+    "authors": [
+        {
+            "name": "Raymond Baghumian",
+            "email": "rayiumir@gmail.com",
+            "homepage": "https://github.com/Rayiumir",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Rayiumir\\HasSlug\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Rayiumir\\HasSlug\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^8.0",
+        "illuminate/support": "^9.0|^10.0|^11.0|^12.0"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Rayiumir\\HasSlug\\ServiceProvider\\SlugServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}
