@@ -1,6 +1,6 @@
 <?php
 
-namespace ServiceProvider;
+namespace Rayiumir\HasSlug\ServiceProvider;
 
 use Illuminate\Support\ServiceProvider;
 use Rayiumir\HasSlug\HasSlug;
@@ -27,6 +27,7 @@ class SlugServiceProvider extends ServiceProvider
     {
         $this->_loadPublished();
     }
+
     private function _loadPublished(): void
     {
         $this->publishes([

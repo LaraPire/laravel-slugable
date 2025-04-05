@@ -1,6 +1,6 @@
 <?php
 
-namespace Trait;
+namespace Rayiumir\HasSlug\Traits;
 
 use Illuminate\Support\Str;
 
@@ -11,7 +11,7 @@ trait HasSlug
      *
      * @return void
      */
-    public static function HasSlug()
+    public static function HasSlug(): void
     {
         static::saving(function ($model) {
             $model->generateSlug();
