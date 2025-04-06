@@ -1,12 +1,12 @@
 {
-    "name": "rayiumir/laravel-has-slug",
+    "name": "rayiumir/laravel-slugable",
     "description": "Minimal auto slug trait for Laravel Eloquent models.",
     "keywords": [
-        "laravel-slug",
-        "laravel slug",
+        "laravel-slugable",
+        "laravel slugable",
         "easy slug",
         "laravel",
-        "laravel slug package"
+        "laravel slugable package"
     ],
     "license": "MIT",
     "type": "package",
