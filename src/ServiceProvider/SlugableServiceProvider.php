@@ -5,7 +5,7 @@ namespace Rayiumir\Slugable\ServiceProvider;
 use Illuminate\Support\ServiceProvider;
 use Rayiumir\Slugable\Slugable;
 
-class SlugServiceProvider extends ServiceProvider
+class SlugableServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -25,13 +25,8 @@ class SlugServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->_loadPublished();
-    }
-
-    private function _loadPublished(): void
-    {
         $this->publishes([
             __DIR__.'/../Traits' => app_path('Traits/')
-        ],'LaravelHasSlug');
+        ],'LaravelSlugableTraits');
     }
 }

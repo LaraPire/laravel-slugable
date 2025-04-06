@@ -12,7 +12,7 @@ trait HasSlugable
      *
      * @return void
      */
-    public static function HasSlugable(): void
+    public static function bootHasSlugable(): void
     {
         static::saving(function (Model $model) {
             $source = $model->slugSourceField ?? 'title';

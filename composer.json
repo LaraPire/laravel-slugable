@@ -38,8 +38,11 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Rayiumir\\Slugable\\ServiceProvider\\SlugServiceProvider"
-            ]
+                "Rayiumir\\Slugable\\ServiceProvider\\SlugableServiceProvider"
+            ],
+            "aliases": {
+                "SlugableFacade": "Rayiumir\\Slugable\\Facade\\SlugableFacade"
+            }
         }
     },
     "minimum-stability": "stable"

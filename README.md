@@ -14,7 +14,7 @@ Perfect for blogs, e-commerce, CMS, or any app that needs clean, readable, SEO-f
 
 - No external dependencies
 
-- Support for Persian and Arabic languages ​​for slug translation
+- Support for Persian and Arabic languages for slug translation
 
 # Installation
 
@@ -27,7 +27,7 @@ composer require rayiumir/laravel-slugable
 After Publish Files:
 
 ```bash
-php artisan vendor:publish --provider="Rayiumir\\Slugable\\ServiceProvider\\SlugServiceProvider"
+php artisan vendor:publish --provider="Rayiumir\\Slugable\\ServiceProvider\\SlugableServiceProvider"
 ```
 
 # How to use
@@ -37,7 +37,7 @@ Calling `HasSlug` in Models `Post.php`.
 ```
 class Post extends Model
 {
-    use HasSlug;
+    use HasSlugable;
 }
 ```
 
