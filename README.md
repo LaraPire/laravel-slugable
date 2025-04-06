@@ -14,8 +14,6 @@ Perfect for blogs, e-commerce, CMS, or any app that needs clean, readable, SEO-f
 
 - No external dependencies
 
-- Works out-of-the-box with Eloquent
-
 - Support for Persian and Arabic languages ​​for slug translation
 
 # Installation
