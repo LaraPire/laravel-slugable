@@ -20,12 +20,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "Rayiumir\\HasSlug\\": "src/"
+            "Rayiumir\\Slugable\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Rayiumir\\HasSlug\\Tests\\": "tests/"
+            "Rayiumir\\Slugable\\Tests\\": "tests/"
         }
     },
     "require": {
@@ -38,7 +38,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Rayiumir\\HasSlug\\ServiceProvider\\SlugServiceProvider"
+                "Rayiumir\\Slugable\\ServiceProvider\\SlugServiceProvider"
             ]
         }
     },

@@ -1,7 +1,7 @@
 <?php
 
-namespace Rayiumir\HasSlug;
-class HasSlug
+namespace Rayiumir\Slugable;
+class Slugable
 {
     public static function index(): string
     {

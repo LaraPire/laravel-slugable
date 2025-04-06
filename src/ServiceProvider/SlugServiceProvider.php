@@ -1,9 +1,9 @@
 <?php
 
-namespace Rayiumir\HasSlug\ServiceProvider;
+namespace Rayiumir\Slugable\ServiceProvider;
 
 use Illuminate\Support\ServiceProvider;
-use Rayiumir\HasSlug\HasSlug;
+use Rayiumir\Slugable\Slugable;
 
 class SlugServiceProvider extends ServiceProvider
 {
@@ -14,8 +14,8 @@ class SlugServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind('HasSlug', function() {
-            return new HasSlug();
+        $this->app->bind('Slugable', function() {
+            return new Slugable();
         });
     }
     /**

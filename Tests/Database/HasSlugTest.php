@@ -1,14 +1,14 @@
 <?php
 
 use Illuminate\Database\Eloquent\Model;
-use Rayiumir\HasSlug\Traits\HasSlug;
+use Rayiumir\Slugable\Traits\HasSlugable;
 
 class HasSlugTest
 {
     public function test_slug_is_generated_automatically(): void
     {
         $post = new class extends Model {
-            use HasSlug;
+            use HasSlugable;
 
             protected $table = 'posts';
             public $timestamps = false;

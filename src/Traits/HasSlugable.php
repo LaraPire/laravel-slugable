@@ -1,18 +1,18 @@
 <?php
 
-namespace Rayiumir\HasSlug\Traits;
+namespace Rayiumir\Slugable\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
-trait HasSlug
+trait HasSlugable
 {
     /**
-     * Boot the trait HasSlug.
+     * Boot the trait Slugable.
      *
      * @return void
      */
-    public static function HasSlug(): void
+    public static function HasSlugable(): void
     {
         static::saving(function (Model $model) {
             $source = $model->slugSourceField ?? 'title';
