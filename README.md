@@ -32,7 +32,7 @@ php artisan vendor:publish --provider="Rayiumir\\Slugable\\ServiceProvider\\Slug
 
 # How to use
 
-Calling `HasSlug` in Models `Post.php`.
+Calling `HasSlugable` in Models `Post.php`.
 
 ```
 class Post extends Model
@@ -52,4 +52,5 @@ $post->save();
 
 echo $post->slug; // Output: laravel-12
 ```
+
 
