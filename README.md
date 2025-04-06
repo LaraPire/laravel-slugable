@@ -27,7 +27,7 @@ composer require rayiumir/laravel-slugable
 After Publish Files:
 
 ```bash
-php artisan vendor:publish --provider="Rayiumir\\HasSlug\\ServiceProvider\\SlugServiceProvider"
+php artisan vendor:publish --provider="Rayiumir\\Slugable\\ServiceProvider\\SlugServiceProvider"
 ```
 
 # How to use
