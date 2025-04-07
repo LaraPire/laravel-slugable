@@ -14,7 +14,7 @@ Perfect for blogs, e-commerce, CMS, or any app that needs clean, readable, SEO-f
 
 - No external dependencies
 
-- Support for Persian and Arabic languages for slug translation
+- Support for Persian and Arabic Numbers to slug
 
 # Installation
 
@@ -42,6 +42,18 @@ class Post extends Model
 ```
 
 Provided that the `title` and `slug` fields are in the database.
+
+If you want to use a custom field for slug generation, you can easily do that:
+
+```
+class Post extends Model
+{
+    use HasSlugable;
+
+    protected $slugSourceField = 'name';
+    protected $slugDestinationField = 'slug';
+}
+```
 
 # Example
 
