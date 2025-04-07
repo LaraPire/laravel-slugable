@@ -9,7 +9,7 @@ trait HasSlugable
 {
     /**
      * Boot the trait HasSlugable.
-     **/
+    **/
     public static function bootHasSlugable(): void
     {
         static::saving(function (Model $model) {
@@ -23,10 +23,6 @@ trait HasSlugable
         });
     }
 
-    /**
-     * Supported From Persian and Arabic to translate slug
-     **/
-
     protected static function convertToSlug(string $value): string
     {
         $value = preg_replace('/[\x{200C}\x{200D}]/u', '', $value);
@@ -36,6 +32,10 @@ trait HasSlugable
 
         return trim(preg_replace('/-+/', '-', $value), '-');
     }
+
+    /**
+     * Supported From Persian and Arabic Numbers to slug
+    **/
 
     protected static function convertNumbers(string $string): string
     {
