@@ -17,8 +17,8 @@ trait HasSlugable
             $destination = $model->slugDestinationField ?? 'slug';
 
             if (empty($model->$destination) && !empty($model->$source)) {
-                $slug = static::generateSlugFrom($model->$source);
-                $model->$destination = static::makeSlugUnique($model, $slug, $destination);
+                $slug = self::convertToSlug($model->$source);
+                $model->$destination = $slug;
             }
         });
     }
@@ -27,38 +27,25 @@ trait HasSlugable
      * Supported From Persian and Arabic to translate slug
      **/
 
-    protected static function generateSlugFrom(string $value): string
+    protected static function convertToSlug(string $value): string
     {
-        $value = static::convertToAscii($value);
-        return Str::slug($value);
+        $value = preg_replace('/[\x{200C}\x{200D}]/u', '', $value);
+        $value = str_replace([' ', '_'], '-', $value);
+        $value = self::convertNumbers($value);
+        $value = preg_replace('/[^\x{0600}-\x{06FF}\x{0750}-\x{077F}a-zA-Z0-9\-]/u', '', $value);
+
+        return trim(preg_replace('/-+/', '-', $value), '-');
     }
 
-    protected static function convertToAscii(string $string): string
+    protected static function convertNumbers(string $string): string
     {
-        $map = [
-            'ا' => 'a', 'أ' => 'a', 'آ' => 'a', 'إ' => 'e', 'ب' => 'b', 'پ' => 'p', 'ت' => 't', 'ث' => 'th', 'ج' => 'j', 'چ' => 'ch',
-            'ح' => 'h', 'خ' => 'kh', 'د' => 'd', 'ذ' => 'dh', 'ر' => 'r', 'ز' => 'z', 'ژ' => 'zh', 'س' => 's', 'ش' => 'sh',
-            'ص' => 's', 'ض' => 'z', 'ط' => 't', 'ظ' => 'z', 'ع' => 'a', 'غ' => 'gh', 'ف' => 'f', 'ق' => 'gh', 'ک' => 'k',
-            'گ' => 'g', 'ل' => 'l', 'م' => 'm', 'ن' => 'n', 'و' => 'v', 'ه' => 'h', 'ی' => 'y', 'ي' => 'y', 'ئ' => 'y', 'ة' => 'h',
-            '‌' => '-',
-
-            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4', '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
-            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4', '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9'
+        $numbers = [
+            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9'
         ];
-
-        return strtr($string, $map);
-    }
-
-    protected static function makeSlugUnique(Model $model, string $slug, string $column): string
-    {
-        $original = $slug;
-        $i = 1;
-
-        while ($model->newQuery()->where($column, $slug)->exists()) {
-            $slug = $original . '-' . $i++;
-        }
-
-        return $slug;
+        return strtr($string, $numbers);
     }
 
 }
