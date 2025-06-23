@@ -8,104 +8,121 @@ use Illuminate\Support\Facades\Log;
 
 trait HasSlugable
 {
+    private const LANGUAGE_PATTERNS = [
+        'fa' => '\x{0600}-\x{06FF}\x{0750}-\x{077F}\x{FB50}-\x{FDFD}\x{FE70}-\x{FEFF}',
+        'ar' => '\x{0600}-\x{06FF}\x{0750}-\x{077F}\x{FB50}-\x{FDFD}\x{FE70}-\x{FEFF}',
+        'en' => '',
+    ];
+
+    private const NUMBER_MAP = [
+        // Persian
+        '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
+        '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
+        // Arabic
+        '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
+        '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
+        // Hindi
+        '०' => '0', '१' => '1', '२' => '2', '३' => '3', '४' => '4',
+        '५' => '5', '६' => '6', '७' => '7', '८' => '8', '९' => '9',
+    ];
+
     /**
      * Boot the trait HasSlugable.
      */
     public static function bootHasSlugable(): void
     {
-        static::saving(function (Model $model) {
-            $model->generateSlug();
-        });
+        static::saving(fn (Model $model) => $model->generateSlug());
     }
 
     /**
-     * Generate slug for the model
+     * Generate slug for the model.
      */
     public function generateSlug(): void
     {
-        $source = $this->slugSourceField ?? 'title';
-        $destination = $this->slugDestinationField ?? 'slug';
-        $separator = $this->slugSeparator ?? '-';
-        $language = $this->slugLanguage ?? 'fa'; // fa, en, ar supported
-        $maxLength = $this->slugMaxLength ?? 250;
-        $forceUpdate = $this->slugForceUpdate ?? false;
+        $config = $this->getSlugConfiguration();
 
-        if (($forceUpdate || empty($this->$destination)) && !empty($this->$source)) {
-            $slug = $this->convertToSlug($this->$source, $separator, $language);
+        if ($this->shouldGenerateSlug($config)) {
+            $slug = $this->createSlug($this->{$config['source']}, $config);
             
-            // Ensure slug is unique if needed
-            if ($this->slugShouldBeUnique ?? true) {
-                $slug = $this->makeSlugUnique($slug, $destination, $separator);
-            }
-            
-            // Limit slug length
-            $this->$destination = Str::limit($slug, $maxLength, '');
+            $this->{$config['destination']} = Str::limit(
+                $config['unique'] ? $this->ensureSlugUniqueness($slug, $config) : $slug,
+                $config['maxLength'],
+                ''
+            );
         }
     }
 
     /**
-     * Convert string to slug
+     * Get slug configuration with defaults.
      */
-    protected function convertToSlug(
-        string $value, 
-        string $separator = '-', 
-        string $language = 'fa'
-    ): string {
-        // Convert numbers first
+    protected function getSlugConfiguration(): array
+    {
+        return [
+            'source' => $this->slugSourceField ?? 'title',
+            'destination' => $this->slugDestinationField ?? 'slug',
+            'separator' => $this->slugSeparator ?? '-',
+            'language' => $this->slugLanguage ?? 'fa',
+            'maxLength' => $this->slugMaxLength ?? 250,
+            'forceUpdate' => $this->slugForceUpdate ?? false,
+            'unique' => $this->slugShouldBeUnique ?? true,
+        ];
+    }
+
+    /**
+     * Determine if we should generate a slug.
+     */
+    protected function shouldGenerateSlug(array $config): bool
+    {
+        return ($config['forceUpdate'] || empty($this->{$config['destination']})) 
+            && !empty($this->{$config['source']});
+    }
+
+    /**
+     * Create a slug from the given value.
+     */
+    protected function createSlug(string $value, array $config): string
+    {
+        return $this->cleanUpSeparators(
+            $this->processSlugString($value, $config),
+            $config['separator']
+        );
+    }
+
+    /**
+     * Process the string to create a slug.
+     */
+    protected function processSlugString(string $value, array $config): string
+    {
         $value = $this->convertNumbers($value);
-        
-        // Language specific processing
-        $value = $this->processLanguageSpecificChars($value, $language);
+        $value = $this->processLanguageSpecificChars($value, $config['language']);
         
         // Remove invisible characters
         $value = preg_replace('/[\x{200C}\x{200D}]/u', '', $value);
         
         // Replace spaces and underscores
-        $value = str_replace([' ', '_'], $separator, $value);
+        $value = str_replace([' ', '_'], $config['separator'], $value);
         
         // Remove special characters
-        $pattern = $this->getCharacterPatternForLanguage($language);
-        $value = preg_replace("/[^{$pattern}a-zA-Z0-9{$separator}]/u", '', $value);
-        
-        // Clean up separators
-        return $this->cleanUpSeparators($value, $separator);
-    }
-
-    /**
-     * Process language specific characters
-     */
-    protected function processLanguageSpecificChars(string $value, string $language): string
-    {
-        switch ($language) {
-            case 'fa':
-                // Persian specific processing
-                $value = str_replace(['‌', 'ـ'], '', $value); // Remove ZWNJ and Tatweel
-                break;
-            case 'ar':
-                // Arabic specific processing
-                $value = str_replace('ـ', '', $value); // Remove Tatweel
-                break;
-        }
+        $pattern = self::LANGUAGE_PATTERNS[$config['language']] ?? self::LANGUAGE_PATTERNS['fa'];
+        $value = preg_replace("/[^{$pattern}a-zA-Z0-9{$config['separator']}]/u", '', $value);
         
         return $value;
     }
 
     /**
-     * Get character pattern based on language
+     * Process language specific characters.
      */
-    protected function getCharacterPatternForLanguage(string $language): string
+    protected function processLanguageSpecificChars(string $value, string $language): string
     {
-        $patterns = [
-            'fa' => '\x{0600}-\x{06FF}\x{0750}-\x{077F}\x{FB50}-\x{FDFD}\x{FE70}-\x{FEFF}',
-            'ar' => '\x{0600}-\x{06FF}\x{0750}-\x{077F}\x{FB50}-\x{FDFD}\x{FE70}-\x{FEFF}',
-            'en' => '',
-        ];
-        
-        return $patterns[$language] ?? $patterns['fa'];
+        return match ($language) {
+            'fa' => str_replace(['‌', 'ـ'], '', $value), // Remove ZWNJ and Tatweel
+            'ar' => str_replace('ـ', '', $value),       // Remove Tatweel
+            default => $value,
+        };
     }
 
     /**
-     * Clean up separators in slug
+     * Clean up separators in slug.
      */
     protected function cleanUpSeparators(string $value, string $separator): string
     {
@@ -114,35 +131,23 @@ trait HasSlugable
     }
 
     /**
-     * Convert Persian and Arabic numbers to English
+     * Convert numbers to English numerals.
      */
     protected function convertNumbers(string $string): string
     {
-        $numbers = [
-            // Persian
-            '۰' => '0', '۱' => '1', '۲' => '2', '۳' => '3', '۴' => '4',
-            '۵' => '5', '۶' => '6', '۷' => '7', '۸' => '8', '۹' => '9',
-            // Arabic
-            '٠' => '0', '١' => '1', '٢' => '2', '٣' => '3', '٤' => '4',
-            '٥' => '5', '٦' => '6', '٧' => '7', '٨' => '8', '٩' => '9',
-            // Hindi (optional)
-            '०' => '0', '१' => '1', '२' => '2', '३' => '3', '४' => '4',
-            '५' => '5', '६' => '6', '७' => '7', '८' => '8', '९' => '9',
-        ];
-        
-        return strtr($string, $numbers);
+        return strtr($string, self::NUMBER_MAP);
     }
 
     /**
-     * Make slug unique by appending counter if needed
+     * Ensure slug uniqueness by appending counter if needed.
      */
-    protected function makeSlugUnique(string $slug, string $destination, string $separator): string
+    protected function ensureSlugUniqueness(string $slug, array $config): string
     {
         $originalSlug = $slug;
         $counter = 2;
         
-        while ($this->slugExists($slug, $destination)) {
-            $slug = $originalSlug . $separator . $counter;
+        while ($this->slugExists($slug, $config['destination'])) {
+            $slug = "{$originalSlug}{$config['separator']}{$counter}";
             $counter++;
         }
         
@@ -150,7 +155,7 @@ trait HasSlugable
     }
 
     /**
-     * Check if slug exists in database
+     * Check if slug exists in database.
      */
     protected function slugExists(string $slug, string $destination): bool
     {
@@ -168,18 +173,30 @@ trait HasSlugable
     }
 
     /**
-     * Check if model uses soft deletes
+     * Check if model uses soft deletes.
      */
     protected function usesSoftDeletes(): bool
     {
-        return in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($this));
+        return in_array('Illuminate\Database\Eloquent\SoftDeletes', class_uses($this), true);
     }
 
     /**
-     * Get the route key name for the model (optional)
+     * Get the route key name for the model.
      */
     public function getRouteKeyName(): string
     {
         return $this->slugDestinationField ?? 'slug';
+    }
+
+    /**
+     * Generate slug from a given string (helper method).
+     */
+    public static function generateSlugFrom(string $source, array $config = []): string
+    {
+        $instance = new static();
+        $defaultConfig = $instance->getSlugConfiguration();
+        $mergedConfig = array_merge($defaultConfig, $config);
+        
+        return $instance->createSlug($source, $mergedConfig);
     }
 }
