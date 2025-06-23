@@ -11,7 +11,6 @@ permissions:
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
 
     strategy:
@@ -19,29 +18,29 @@ jobs:
         php-version: [8.1, 8.2, 8.3]
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    - name: Set up PHP ${{ matrix.php-version }}
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: ${{ matrix.php-version }}
-        extensions: mbstring, xml, ctype, json, curl
-        coverage: none
+      - name: Set up PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, xml, ctype, json, curl
+          coverage: none
 
-    - name: Validate composer.json and composer.lock
-      run: composer validate --strict
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
 
-    - name: Cache Composer packages
-      uses: actions/cache@v3
-      with:
-        path: vendor
-        key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-php-${{ matrix.php-version }}-
+      - name: Cache Composer packages
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-php-${{ matrix.php-version }}-
 
-    - name: Install dependencies
-      run: composer install --prefer-dist --no-interaction --no-progress
+      - name: Install dependencies
+        run: composer install --prefer-dist --no-interaction --no-progress
 
-    - name: Run test suite
-      run: composer run-script test
+      - name: Run PHPUnit tests
+        run: ./vendor/bin/phpunit
