@@ -6,18 +6,18 @@ Perfect for blogs, e-commerce, CMS, or any app that needs clean, readable, SEO-f
 
 ## Features
 
-- 🚀 Auto-generate slug on model creation
-- 🔄 Optional re-generation on model update
-- 🛠️ Customizable source and destination fields
-- 🌍 Multi-language support (Persian, Arabic, English)
-- 🔢 Automatic conversion of non-English numbers
-- 🧹 Special character cleaning for each language
-- 🔍 Unique slug enforcement with counter
-- 📏 Max length enforcement
-- 💡 No external dependencies
-- ⚡ Static helper method for non-model usage
-- 🧵 Thread-safe implementation
-- 🔒 Type-safe operations
+- Auto-generate slug on model creation
+- Optional re-generation on model update
+- Customizable source and destination fields
+- Multi-language support (Persian, Arabic, English)
+- Automatic conversion of non-English numbers
+- Special character cleaning for each language
+- Unique slug enforcement with counter
+- Max length enforcement
+- No external dependencies
+- Static helper method for non-model usage
+- Thread-safe implementation
+- Type-safe operations
 
 ## Installation
 
@@ -101,7 +101,7 @@ $slug = Post::generateSlugFrom('My Post Title', [
 
 If in a resource route, the absence of the id parameter causes a 404 error, it's enough to add the following code to the route:
 
-```
+```php
 // web.php
 Route::resource('posts', PostController::class)
     ->parameters(['posts' => 'post:id']); // Add this parameter binding
