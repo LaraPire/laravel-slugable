@@ -97,6 +97,16 @@ $slug = Post::generateSlugFrom('My Post Title', [
 ]);
 ```
 
+## Using the `id` parameter
+
+If in a resource route, the absence of the id parameter causes a 404 error, it's enough to add the following code to the route:
+
+```
+// web.php
+Route::resource('posts', PostController::class)
+    ->parameters(['posts' => 'post:id']); // Add this parameter binding
+```
+
 ## Example Workflow
 
 ```php
