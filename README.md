@@ -57,6 +57,8 @@ class Post extends Model
 
     protected $slugSourceField = 'name';       // Field to generate slug from
     protected $slugDestinationField = 'slug';  // Field to store slug in
+    protected $slugUseForRoutes = false; // Use id for routes (default - no need to configure)
+    protected $slugUseForRoutes = true; // Use slug for routes
 }
 ```
 
@@ -95,16 +97,6 @@ $slug = Post::generateSlugFrom('My Post Title', [
     'separator' => '_',
     'maxLength' => 50
 ]);
-```
-
-## Using the `id` parameter
-
-If in a resource route, the absence of the id parameter causes a 404 error, it's enough to add the following code to the route:
-
-```php
-// web.php
-Route::resource('posts', PostController::class)
-    ->parameters(['posts' => 'post:id']); // Add this parameter binding
 ```
 
 ## Example Workflow

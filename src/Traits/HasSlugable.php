@@ -65,6 +65,7 @@ trait HasSlugable
             'maxLength' => $this->slugMaxLength ?? 250,
             'forceUpdate' => $this->slugForceUpdate ?? false,
             'unique' => $this->slugShouldBeUnique ?? true,
+            'useForRoutes' => $this->slugUseForRoutes ?? false,
         ];
     }
 
@@ -185,7 +186,24 @@ trait HasSlugable
      */
     public function getRouteKeyName(): string
     {
-        return $this->slugDestinationField ?? 'slug';
+        $config = $this->getSlugConfiguration();
+        
+        return $config['useForRoutes'] ? $config['destination'] : 'id';
+    }
+
+    /**
+     * Retrieve the model for a bound value.
+     * This method allows the use of both id and slug at the same time.
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        $config = $this->getSlugConfiguration();
+        
+        if ($config['useForRoutes'] && $field === null) {
+            $field = $config['destination'];
+        }
+        
+        return $this->where($field ?? $this->getRouteKeyName(), $value)->firstOrFail();
     }
 
     /**
